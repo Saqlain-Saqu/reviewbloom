@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Write a Review — ReviewBloom</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fraunces:wght@700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: linear-gradient(135deg, #f0f9f4 0%, #e8f5e9 100%);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 24px;
+      box-shadow: 0 20px 60px rgba(16,185,129,0.15);
+      padding: 48px;
+      max-width: 520px;
+      width: 100%;
+    }
+
+    .brand {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .brand-icon { font-size: 40px; margin-bottom: 8px; }
+
+    .brand-name {
+      font-family: 'Fraunces', serif;
+      font-size: 22px;
+      color: #10b981;
+    }
+
+    .product-name {
+      font-size: 18px;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 32px;
+      color: #1a2e1a;
+      padding: 16px;
+      background: #f0f9f4;
+      border-radius: 12px;
+    }
+
+    /* Star Rating */
+    .stars-container {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .stars-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #6b8f6b;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .stars {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .star {
+      font-size: 48px;
+      cursor: pointer;
+      color: #d1d5db;
+      transition: all 0.15s;
+      user-select: none;
+    }
+
+    .star:hover, .star.active { color: #f59e0b; transform: scale(1.1); }
+
+    .rating-text {
+      font-size: 14px;
+      font-weight: 600;
+      color: #10b981;
+      margin-top: 8px;
+      height: 20px;
+    }
+
+    /* Form Fields */
+    .field { margin-bottom: 20px; }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #6b8f6b;
+      margin-bottom: 8px;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid #e2ebe2;
+      border-radius: 12px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 14px;
+      color: #1a2e1a;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input:focus, textarea:focus { border-color: #10b981; }
+    textarea { resize: vertical; min-height: 120px; }
+
+    /* Language selector */
+    .lang-selector {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .lang-btn {
+      flex: 1;
+      padding: 10px;
+      border: 2px solid #e2ebe2;
+      border-radius: 10px;
+      background: white;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      color: #6b8f6b;
+      transition: all 0.2s;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .lang-btn.active {
+      border-color: #10b981;
+      background: rgba(16,185,129,0.08);
+      color: #10b981;
+    }
+
+    /* Submit button */
+    .submit-btn {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      transition: all 0.2s;
+    }
+
+    .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(16,185,129,0.35); }
+    .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    /* Success state */
+    .success-state {
+      text-align: center;
+      padding: 20px 0;
+      display: none;
+    }
+
+    .success-icon { font-size: 64px; margin-bottom: 20px; }
+    .success-title { font-family: 'Fraunces', serif; font-size: 26px; color: #10b981; margin-bottom: 12px; }
+    .success-text { color: #6b8f6b; line-height: 1.7; }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <div class="brand">
+    <div class="brand-icon">🌸</div>
+    <div class="brand-name">ReviewBloom</div>
+  </div>
+
+  <div id="form-section">
+    <div class="product-name" id="product-display">Loading...</div>
+
+    <!-- Language Selector -->
+    <div class="lang-selector">
+      <button class="lang-btn active" onclick="setLang('english', this)">🇬🇧 English</button>
+      <button class="lang-btn" onclick="setLang('urdu', this)">🇵🇰 اردو</button>
+      <button class="lang-btn" onclick="setLang('hindi', this)">🇮🇳 हिंदी</button>
+    </div>
+
+    <!-- Stars -->
+    <div class="stars-container">
+      <span class="stars-label" id="lbl-rating">Your Rating *</span>
+      <div class="stars" id="stars">
+        <span class="star" data-value="1">★</span>
+        <span class="star" data-value="2">★</span>
+        <span class="star" data-value="3">★</span>
+        <span class="star" data-value="4">★</span>
+        <span class="star" data-value="5">★</span>
+      </div>
+      <div class="rating-text" id="rating-text"></div>
+    </div>
+
+    <!-- Form -->
+    <div class="field">
+      <label id="lbl-name">Your Name *</label>
+      <input type="text" id="f-name" placeholder="John Doe"/>
+    </div>
+    <div class="field">
+      <label id="lbl-email">Your Email</label>
+      <input type="email" id="f-email" placeholder="john@example.com"/>
+    </div>
+    <div class="field">
+      <label id="lbl-title">Review Title</label>
+      <input type="text" id="f-title" placeholder="Great product!"/>
+    </div>
+    <div class="field">
+      <label id="lbl-body">Your Review</label>
+      <textarea id="f-body" placeholder="Tell others about your experience..."></textarea>
+    </div>
+
+    <button class="submit-btn" id="submit-btn" onclick="submitReview()">
+      ⭐ Submit Review
+    </button>
+  </div>
+
+  <!-- Success State -->
+  <div class="success-state" id="success-state">
+    <div class="success-icon">🌸</div>
+    <div class="success-title" id="success-title">Thank You!</div>
+    <p class="success-text" id="success-text">Your review has been submitted successfully. It will appear after approval.</p>
+  </div>
+</div>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const shop = params.get('shop');
+  const productId = params.get('product_id');
+  const productTitle = params.get('product_title');
+  const orderId = params.get('order_id');
+  const customerEmail = params.get('email');
+  const customerName = params.get('name');
+  const urlLang = params.get('lang') || 'english';
+
+  let selectedRating = 0;
+  let currentLang = urlLang;
+
+  const translations = {
+    english: {
+      rating: 'Your Rating *', name: 'Your Name *', email: 'Your Email',
+      title: 'Review Title', body: 'Your Review',
+      submit: '⭐ Submit Review',
+      stars: ['', 'Poor', 'Fair', 'Good', 'Very Good', 'Excellent'],
+      successTitle: 'Thank You!',
+      successText: 'Your review has been submitted. It will appear after approval.',
+      placeholder: { name: 'John Doe', email: 'john@example.com', title: 'Great product!', body: 'Tell others about your experience...' }
+    },
+    urdu: {
+      rating: 'آپ کی درجہ بندی *', name: 'آپ کا نام *', email: 'آپ کی ای میل',
+      title: 'ریویو کا عنوان', body: 'آپ کا ریویو',
+      submit: '⭐ ریویو جمع کریں',
+      stars: ['', 'خراب', 'ٹھیک', 'اچھا', 'بہت اچھا', 'بہترین'],
+      successTitle: 'شکریہ!',
+      successText: 'آپ کا ریویو جمع ہو گیا ہے۔ منظوری کے بعد ظاہر ہو گا۔',
+      placeholder: { name: 'آپ کا نام', email: 'ای میل', title: 'بہترین پروڈکٹ!', body: 'اپنا تجربہ شیئر کریں...' }
+    },
+    hindi: {
+      rating: 'आपकी रेटिंग *', name: 'आपका नाम *', email: 'आपका ईमेल',
+      title: 'समीक्षा शीर्षक', body: 'आपकी समीक्षा',
+      submit: '⭐ समीक्षा जमा करें',
+      stars: ['', 'खराब', 'ठीक', 'अच्छा', 'बहुत अच्छा', 'उत्कृष्ट'],
+      successTitle: 'धन्यवाद!',
+      successText: 'आपकी समीक्षा सबमिट हो गई है। अनुमोदन के बाद दिखाई देगी।',
+      placeholder: { name: 'आपका नाम', email: 'ईमेल', title: 'बढ़िया उत्पाद!', body: 'अपना अनुभव साझा करें...' }
+    }
+  };
+
+  // Init
+  document.getElementById('product-display').textContent = decodeURIComponent(productTitle || 'Product Review');
+  if (customerEmail) document.getElementById('f-email').value = decodeURIComponent(customerEmail);
+  if (customerName) document.getElementById('f-name').value = decodeURIComponent(customerName);
+
+  setLang(urlLang);
+
+  // Language
+  function setLang(lang, btn) {
+    currentLang = lang;
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+
+    const t = translations[lang];
+    document.getElementById('lbl-rating').textContent = t.rating;
+    document.getElementById('lbl-name').textContent = t.name;
+    document.getElementById('lbl-email').textContent = t.email;
+    document.getElementById('lbl-title').textContent = t.title;
+    document.getElementById('lbl-body').textContent = t.body;
+    document.getElementById('submit-btn').textContent = t.submit;
+    document.getElementById('f-name').placeholder = t.placeholder.name;
+    document.getElementById('f-email').placeholder = t.placeholder.email;
+    document.getElementById('f-title').placeholder = t.placeholder.title;
+    document.getElementById('f-body').placeholder = t.placeholder.body;
+    if (selectedRating) document.getElementById('rating-text').textContent = t.stars[selectedRating];
+  }
+
+  // Stars
+  const stars = document.querySelectorAll('.star');
+  stars.forEach(star => {
+    star.addEventListener('mouseover', () => {
+      const val = parseInt(star.dataset.value);
+      stars.forEach((s, i) => s.style.color = i < val ? '#f59e0b' : '#d1d5db');
+      document.getElementById('rating-text').textContent = translations[currentLang].stars[val];
+    });
+    star.addEventListener('click', () => {
+      selectedRating = parseInt(star.dataset.value);
+      stars.forEach((s, i) => {
+        s.style.color = i < selectedRating ? '#f59e0b' : '#d1d5db';
+        s.classList.toggle('active', i < selectedRating);
+      });
+    });
+    star.addEventListener('mouseleave', () => {
+      stars.forEach((s, i) => s.style.color = i < selectedRating ? '#f59e0b' : '#d1d5db');
+    });
+  });
+
+  // Submit
+  async function submitReview() {
+    const name = document.getElementById('f-name').value.trim();
+    if (!name || !selectedRating) {
+      alert(currentLang === 'urdu' ? 'نام اور درجہ بندی ضروری ہے' : currentLang === 'hindi' ? 'नाम और रेटिंग आवश्यक है' : 'Name and rating are required!');
+      return;
+    }
+
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.textContent = '...';
+
+    try {
+      const res = await fetch('/api/reviews/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          shop, product_id: productId, product_title: productTitle,
+          order_id: orderId, customer_name: name,
+          customer_email: document.getElementById('f-email').value,
+          rating: selectedRating,
+          title: document.getElementById('f-title').value,
+          body: document.getElementById('f-body').value,
+          language: currentLang
+        })
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        const t = translations[currentLang];
+        document.getElementById('form-section').style.display = 'none';
+        document.getElementById('success-state').style.display = 'block';
+        document.getElementById('success-title').textContent = t.successTitle;
+        document.getElementById('success-text').textContent = t.successText;
+      }
+    } catch(e) {
+      btn.disabled = false;
+      btn.textContent = translations[currentLang].submit;
+    }
+  }
+</script>
+</body>
+</html>
