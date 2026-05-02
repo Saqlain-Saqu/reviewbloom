@@ -60,7 +60,7 @@ router.post('/submit', async (req, res) => {
     // Get store settings for auto-approve
     const storeResult = await pool.query('SELECT * FROM stores WHERE shop = $1', [shop]);
     const store = storeResult.rows[0];
-    const status = store?.plan === 'pro' ? 'approved' : 'pending';
+    const status = 'approved';
 
     await pool.query(`
       INSERT INTO reviews (shop, product_id, product_title, order_id, customer_name, customer_email, rating, title, body, language, status)
