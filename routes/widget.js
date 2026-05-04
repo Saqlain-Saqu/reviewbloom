@@ -139,8 +139,8 @@ router.get('/reviewbloom.js', async (req, res) => {
         <div id="rb-form-container" style="display:none;background:\${isDark ? '#13131a' : '#f8fafc'};border-radius:12px;padding:24px;margin-bottom:24px;">
           <div id="rb-form-inner">
             <div style="margin-bottom:16px;">
-              <label style="display:block;font-size:13px;font-weight:600;margin-bottom:8px;color:#9ca3af;">\${t.rating}</label>
-              <div id="rb-rating-stars" style="display:flex;gap:4px;">
+              <label style="display:block;font-size:13px;font-weight:600;margin-bottom:8px;color:#9ca3af;text-align:center;">\${t.rating}</label>
+              <div id="rb-rating-stars" style="display:flex;gap:4px;justify-content:center;">
                 \${[1,2,3,4,5].map(i => \`
                   <span class="rb-star-input" data-value="\${i}" style="font-size:36px;cursor:pointer;color:#d1d5db;transition:color 0.1s;">★</span>
                 \`).join('')}
@@ -150,7 +150,7 @@ router.get('/reviewbloom.js', async (req, res) => {
             <div style="display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:12px;">
               <input id="rb-name" type="text" placeholder="\${t.name}" style="
                 padding:12px;border:1px solid \${borderColor};border-radius:8px;    
-                background:\${bgColor};color:\${textColor};font-size:14px;outline:none;
+                background:\${bgColor};color:\${textColor};font-size:14px;outline:none;  
               "/>
               <input id="rb-email" type="email" placeholder="\${t.email}" style="
                 padding:12px;border:1px solid \${borderColor};border-radius:8px;
