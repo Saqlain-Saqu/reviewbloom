@@ -139,7 +139,7 @@ router.get('/reviewbloom.js', async (req, res) => {
         <div id="rb-form-container" style="display:none;background:\${isDark ? '#13131a' : '#f8fafc'};border-radius:12px;padding:24px;margin-bottom:24px;">
           <div id="rb-form-inner">
             <div style="margin-bottom:16px;">
-              <label style="display:block;font-size:13px;font-weight:600;margin-bottom:8px;color:#9ca3af;text-align:center;">\${t.rating}</label>
+              <label style="display:block;font-size:13px;font-weight:600;margin-bottom:8px;color:#9ca3af;text-align:center;gi">\${t.rating}</label>
               <div id="rb-rating-stars" style="display:flex;gap:4px;justify-content:center;">
                 \${[1,2,3,4,5].map(i => \`
                   <span class="rb-star-input" data-value="\${i}" style="font-size:36px;cursor:pointer;color:#d1d5db;transition:color 0.1s;">★</span>
@@ -257,7 +257,7 @@ router.get('/reviewbloom.js', async (req, res) => {
       }
 
       const submitBtn = container.querySelector('#rb-submit');
-      submitBtn.textContent = '...';
+      submitBtn.textContent = '...';  
       submitBtn.disabled = true;
 
       try {
