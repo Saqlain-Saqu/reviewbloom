@@ -147,9 +147,9 @@ router.get('/reviewbloom.js', async (req, res) => {
               </div>
               <span id="rb-rating-text" style="font-size:12px;color:#9ca3af;margin-top:4px;display:block;"></span>
             </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+            <div style="display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:12px;">
               <input id="rb-name" type="text" placeholder="\${t.name}" style="
-                padding:12px;border:1px solid \${borderColor};border-radius:8px;
+                padding:12px;border:1px solid \${borderColor};border-radius:8px;    
                 background:\${bgColor};color:\${textColor};font-size:14px;outline:none;
               "/>
               <input id="rb-email" type="email" placeholder="\${t.email}" style="
