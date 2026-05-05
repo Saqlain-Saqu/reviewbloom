@@ -8,7 +8,7 @@ body {
     background: linear-gradient(135deg, #f0f9f4 0%, #e8f5e9 100%);
     font-family: 'Plus Jakarta Sans', sans-serif;
     min-height: 100vh;
-    display: flex;
+    display: flex;   
     align-items: center;
     justify-content: center;
     padding: 20px;
