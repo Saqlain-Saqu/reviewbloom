@@ -320,6 +320,29 @@ router.get('/reviewbloom.js', async (req, res) => {
   } else {
     init();
   }
+
+  // Listen for new review submissions from review.html
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'reviewbloom_new_review') {
+      try {
+        const newReview = JSON.parse(e.newValue);
+        const containers = document.querySelectorAll('[data-reviewbloom]');
+        const shop = window.Shopify?.shop || window.location.hostname;
+        
+        containers.forEach((container) => {
+          const productId = container.dataset.productId;
+          if (productId == newReview.productId && shop === newReview.shop) {
+            Promise.all([getStoreSettings(), getReviews(productId)])
+              .then(([settings, data]) => {
+                const lang = settings.language || 'english';
+                renderWidget(container, data, settings, lang);
+              })
+              .catch(() => {});
+          }
+        });
+      } catch(e) {}
+    }
+  });
 })();
   `;
 
