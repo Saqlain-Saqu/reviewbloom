@@ -8,6 +8,10 @@ router.get('/product/:productId', async (req, res) => {
   const { productId } = req.params;
   const { shop } = req.query;
 
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+
   try {
     const result = await pool.query(`
       SELECT id, customer_name, rating, title, body, language, helpful_count, created_at

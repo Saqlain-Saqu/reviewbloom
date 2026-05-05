@@ -191,6 +191,13 @@
         document.getElementById('success-state').style.display = 'block';
         document.getElementById('success-title').textContent = t.successTitle;
         document.getElementById('success-text').textContent = t.successText;
+        
+        // Add back button
+        const backBtn = document.createElement('button');
+        backBtn.textContent = 'Back to Product →';
+        backBtn.style.cssText = 'margin-top:20px;background:#10b981;color:white;border:none;padding:12px 24px;border-radius:8px;cursor:pointer;font-weight:600;';
+        backBtn.onclick = () => window.history.back();
+        document.getElementById('success-state').appendChild(backBtn);
       }
     } catch(e) {
       btn.disabled = false;
