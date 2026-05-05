@@ -286,19 +286,33 @@ router.get('/reviewbloom.js', async (req, res) => {
     });
   }
 
+  function renderLoading(container) {
+    container.innerHTML = '<div style="min-height:220px;display:flex;align-items:center;justify-content:center;color:#6b7280;font-size:14px;">Loading ReviewBloom...</div>';
+  }
+
   async function init() {
     const containers = document.querySelectorAll('[data-reviewbloom]');
     if (containers.length === 0) return;
 
-    const settings = await getStoreSettings();
-    const lang = settings.language || 'english';
+    containers.forEach(renderLoading);
 
-    for (const container of containers) {
+    const settingsPromise = getStoreSettings();
+
+    containers.forEach((container) => {
       const productId = container.dataset.productId;
-      if (!productId) continue;
-      const data = await getReviews(productId);
-      renderWidget(container, data, settings, lang);
-    }
+      if (!productId) return;
+
+      const reviewsPromise = getReviews(productId);
+
+      Promise.all([settingsPromise, reviewsPromise])
+        .then(([settings, data]) => {
+          const lang = settings.language || 'english';
+          renderWidget(container, data, settings, lang);
+        })
+        .catch(() => {
+          container.innerHTML = '<div style="min-height:220px;display:flex;align-items:center;justify-content:center;color:#ef4444;font-size:14px;">Unable to load reviews.</div>';
+        });
+    });
   }
 
   if (document.readyState === 'loading') {

@@ -109,6 +109,39 @@ router.put('/settings', async (req, res) => {
   }
 });
 
+// Dashboard data (stats + latest pending reviews)
+router.get('/dashboard', async (req, res) => {
+  const { shop } = req.query;
+  try {
+    const [statsResult, pendingResult] = await Promise.all([
+      pool.query(`
+        SELECT
+          COUNT(*) as total_reviews,
+          COUNT(*) FILTER (WHERE status = 'pending') as pending,
+          COUNT(*) FILTER (WHERE status = 'approved') as approved,
+          ROUND(AVG(rating), 1) as avg_rating,
+          COUNT(*) FILTER (WHERE created_at > NOW() - INTERVAL '30 days') as this_month
+        FROM reviews WHERE shop = $1
+      `, [shop]),
+      pool.query(`
+        SELECT id, customer_name, customer_email, rating, title, body, status, product_title, created_at
+        FROM reviews
+        WHERE shop = $1 AND status = 'pending'
+        ORDER BY created_at DESC
+        LIMIT 3
+      `, [shop])
+    ]);
+
+    res.json({
+      stats: statsResult.rows[0] || {},
+      pendingReviews: pendingResult.rows || []
+    });
+  } catch (error) {
+    console.error('Admin dashboard error:', error);
+    res.status(500).json({ error: 'Failed to get dashboard data' });
+  }
+});
+
 // Dashboard stats
 router.get('/stats', async (req, res) => {
   const { shop } = req.query;
@@ -124,8 +157,9 @@ router.get('/stats', async (req, res) => {
     `, [shop]);
     res.json(stats.rows[0]);
   } catch (error) {
+    console.error('Admin stats error:', error);
     res.status(500).json({ error: 'Failed to get stats' });
   }
 });
-
+  
 export default router;

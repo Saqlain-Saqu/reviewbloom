@@ -257,8 +257,9 @@
   // Load dashboard stats
   async function loadDashboard() {
     try {
-      const res = await fetch(`/api/admin/stats?shop=${shop}`);
-      const stats = await res.json();
+      const res = await fetch(`/api/admin/dashboard?shop=${shop}`);
+      const data = await res.json();
+      const stats = data.stats || {};
 
       document.getElementById('stat-total').textContent = stats.total_reviews || 0;
       document.getElementById('stat-pending').textContent = stats.pending || 0;
@@ -267,12 +268,10 @@
       document.getElementById('stat-month').textContent = `${stats.this_month || 0} this month`;
       document.getElementById('pending-badge').textContent = stats.pending || 0;
 
-      // Load pending reviews
-      const reviewsRes = await fetch(`/api/admin/reviews?shop=${shop}&status=pending`);
-      const reviewsData = await reviewsRes.json();
-      renderReviews(reviewsData.reviews || [], 'dashboard-pending', 3);
+      renderReviews(data.pendingReviews || [], 'dashboard-pending', 3);
     } catch (e) {
       console.error(e);
+      document.getElementById('dashboard-pending').innerHTML = '<div class="empty-state"><div class="empty-icon">❌</div><p>Unable to load dashboard content</p></div>';
     }
   }
 
