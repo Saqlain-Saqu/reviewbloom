@@ -5,13 +5,20 @@ const router = express.Router();
 
 // Widget JS file served to stores
 router.get('/reviewbloom.js', async (req, res) => {
-  const appUrl = process.env.SHOPIFY_APP_URL;
+  const appUrl = process.env.SHOPIFY_APP_URL || '';
 
   const widgetJS = `
 (function() {
   'use strict';
   
-  const APP_URL = '${appUrl}';
+  const APP_URL = '${appUrl}' || (function() {
+    try {
+      if (typeof document !== 'undefined' && document.currentScript) {
+        return new URL(document.currentScript.src).origin;
+      }
+    } catch (e) {}
+    return window.location.origin;
+  })();
   
   // Get shop from Shopify
   const shop = window.Shopify?.shop || window.location.hostname;
@@ -254,7 +261,7 @@ router.get('/reviewbloom.js', async (req, res) => {
       if (!name || !selectedRating) {
         alert('Please enter your name and rating!');
         return;
-      }
+      } 
 
       const submitBtn = container.querySelector('#rb-submit');
       submitBtn.textContent = '...';  
