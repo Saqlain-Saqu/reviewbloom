@@ -8,7 +8,214 @@
   <link rel="stylesheet" href="/css/style_review.css">
 </head>
 <body>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
+body {
+    background: linear-gradient(135deg, #f0f9f4 0%, #e8f5e9 100%);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;   
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.card {
+    background: white;
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(16, 185, 129, 0.15);
+    padding: 48px;
+    max-width: 520px;
+    width: 100%;
+}
+
+.brand {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.brand-icon {
+    font-size: 40px;
+    margin-bottom: 8px;
+}
+
+.brand-name {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    color: #10b981;
+}
+
+.product-name {
+    font-size: 18px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 32px;
+    color: #1a2e1a;
+    padding: 16px;
+    background: #f0f9f4;
+    border-radius: 12px;
+}
+
+/* Star Rating */
+.stars-container {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.stars-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #6b8f6b;
+    margin-bottom: 12px;
+    display: block;
+}
+
+.stars {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+}
+
+.star {
+    font-size: 48px;
+    cursor: pointer;
+    color: #d1d5db;
+    transition: all 0.15s;
+    user-select: none;
+}
+
+.star:hover,
+.star.active {
+    color: #f59e0b;
+    transform: scale(1.1);
+}
+
+.rating-text {
+    font-size: 14px;
+    font-weight: 600;
+    color: #10b981;
+    margin-top: 8px;
+    height: 20px;
+}
+
+/* Form Fields */
+.field {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #6b8f6b;
+    margin-bottom: 8px;
+}
+
+input,
+textarea {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid #e2ebe2;
+    border-radius: 12px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 14px;
+    color: #1a2e1a;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+input:focus,
+textarea:focus {
+    border-color: #10b981;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+/* Language selector */
+.lang-selector {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+}
+
+.lang-btn {
+    flex: 1;
+    padding: 10px;
+    border: 2px solid #e2ebe2;
+    border-radius: 10px;
+    background: white;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    color: #6b8f6b;
+    transition: all 0.2s;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.lang-btn.active {
+    border-color: #10b981;
+    background: rgba(16, 185, 129, 0.08);
+    color: #10b981;
+}
+
+/* Submit button */
+.submit-btn {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    transition: all 0.2s;
+}
+
+.submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(16, 185, 129, 0.35);
+}
+
+.submit-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Success state */
+.success-state {
+    text-align: center;
+    padding: 20px 0;
+    display: none;
+}
+
+.success-icon {
+    font-size: 64px;
+    margin-bottom: 20px;
+}
+
+.success-title {
+    font-family: 'Fraunces', serif;
+    font-size: 26px;
+    color: #10b981;
+    margin-bottom: 12px;
+}
+
+.success-text {
+    color: #6b8f6b;
+    line-height: 1.7;
+}
+</style>
 <div class="card">
   <div class="brand">
     <div class="brand-icon">🌸</div>
@@ -54,9 +261,13 @@
       <textarea id="f-body" placeholder="Tell others about your experience..."></textarea>
     </div>
 
-    <button class="submit-btn" id="submit-btn" onclick="submitReview()">
+    <button class="submit-btn" id="submit-btn" type="button" onclick="submitReview()">
       ⭐ Submit Review
     </button>
+    <div id="submit-error" style="color:#ef4444;font-size:13px;margin-top:12px;display:none;"></div>
+    <div id="app-url-warning" style="color:#b45309;background:#fef3c7;border:1px solid #fbbf24;padding:12px;border-radius:10px;margin-top:14px;display:none;font-size:13px;">
+      This page must be opened using the app backend or with the <code>app_url</code> query parameter.
+    </div>
   </div>
 
   <!-- Success State -->
@@ -76,6 +287,8 @@
   const customerEmail = params.get('email');
   const customerName = params.get('name');
   const urlLang = params.get('lang') || 'english';
+  const APP_URL = params.get('app_url') || window.location.origin;
+  const needsAppUrl = !params.get('app_url') && window.location.origin.match(/127\.0\.0\.1:5500|localhost:5500/);
 
   let selectedRating = 0;
   let currentLang = urlLang;
@@ -116,6 +329,13 @@
   if (customerName) document.getElementById('f-name').value = decodeURIComponent(customerName);
 
   setLang(urlLang);
+  if (needsAppUrl) {
+    const warningEl = document.getElementById('app-url-warning');
+    if (warningEl) {
+      warningEl.style.display = 'block';
+      warningEl.textContent = 'This review page is opened from 127.0.0.1:5500. Use the app backend URL or add ?app_url=http://127.0.0.1:3000 to the URL.';
+    }
+  }
 
   // Language
   function setLang(lang, btn) {
@@ -158,19 +378,36 @@
   });
 
   // Submit
+  function showSubmitError(message) {
+    const errorEl = document.getElementById('submit-error');
+    if (!errorEl) return;
+    errorEl.textContent = message;
+    errorEl.style.display = 'block';
+  }
+
+  function clearSubmitError() {
+    const errorEl = document.getElementById('submit-error');
+    if (!errorEl) return;
+    errorEl.textContent = '';
+    errorEl.style.display = 'none';
+  }
+
   async function submitReview() {
+    clearSubmitError();
+
     const name = document.getElementById('f-name').value.trim();
     if (!name || !selectedRating) {
-      alert(currentLang === 'urdu' ? 'نام اور درجہ بندی ضروری ہے' : currentLang === 'hindi' ? 'नाम और रेटिंग आवश्यक है' : 'Name and rating are required!');
+      showSubmitError(currentLang === 'urdu' ? 'نام اور درجہ بندی ضروری ہے' : currentLang === 'hindi' ? 'नाम और रेटिंग आवश्यक है' : 'Name and rating are required!');
       return;
     }
 
     const btn = document.getElementById('submit-btn');
     btn.disabled = true;
+    const originalText = btn.textContent;
     btn.textContent = '...';
 
     try {
-      const res = await fetch('/api/reviews/submit', {
+      const res = await fetch(APP_URL + '/api/reviews/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -185,23 +422,38 @@
       });
 
       const data = await res.json();
-      if (data.success) {
-        const t = translations[currentLang];
-        document.getElementById('form-section').style.display = 'none';
-        document.getElementById('success-state').style.display = 'block';
-        document.getElementById('success-title').textContent = t.successTitle;
-        document.getElementById('success-text').textContent = t.successText;
-        
-        // Add back button
-        const backBtn = document.createElement('button');
-        backBtn.textContent = 'Back to Product →';
-        backBtn.style.cssText = 'margin-top:20px;background:#10b981;color:white;border:none;padding:12px 24px;border-radius:8px;cursor:pointer;font-weight:600;';
-        backBtn.onclick = () => window.history.back();
-        document.getElementById('success-state').appendChild(backBtn);
-      }
-    } catch(e) {
+      if (!res.ok || !data.success) {
+        const errorMessage = data.error || (currentLang === 'urdu' ? 'درخواست مکمل نہیں ہوئی' : currentLang === 'hindi' ? 'रिक्वेस्ट पूरी नहीं हुई' : 'Submission failed');
+        showSubmitError(errorMessage);
+        btn.disabled = false;
+        btn.textContent = originalText;
+        return;
+      } 
+
+      const t = translations[currentLang];
+      document.getElementById('form-section').style.display = 'none';
+      document.getElementById('success-state').style.display = 'block';
+      document.getElementById('success-title').textContent = t.successTitle;
+      document.getElementById('success-text').textContent = t.successText;
+
+      const backBtn = document.createElement('button');
+      backBtn.textContent = 'Back to Product →';
+      backBtn.style.cssText = 'margin-top:20px;background:#10b981;color:white;border:none;padding:12px 24px;border-radius:8px;cursor:pointer;font-weight:600;';
+      backBtn.onclick = () => window.history.back();
+      document.getElementById('success-state').appendChild(backBtn);
+
+      setTimeout(() => {
+        document.getElementById('success-state').style.display = 'none';
+        document.getElementById('form-section').style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = originalText;
+      }, 3000);
+    } catch (e) {
+      const networkErrorMessage = needsAppUrl
+        ? (currentLang === 'urdu' ? 'یہ صفحہ غلط ہوسٹ سے کھولا گیا ہے۔ app_url یا backend URL استعمال کریں۔' : currentLang === 'hindi' ? 'यह पेज गलत होस्ट से खुला है। app_url या backend URL का उपयोग करें।' : 'This page was opened from the wrong host. Use app_url or the backend URL.');
+      showSubmitError(networkErrorMessage);
       btn.disabled = false;
-      btn.textContent = translations[currentLang].submit;
+      btn.textContent = originalText;
     }
   }
 </script>
