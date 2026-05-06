@@ -286,19 +286,33 @@ router.get('/reviewbloom.js', async (req, res) => {
     });
   }
 
+  function renderLoading(container) {
+    container.innerHTML = '<div style="min-height:220px;display:flex;align-items:center;justify-content:center;color:#6b7280;font-size:14px;">Loading ReviewBloom...</div>';
+  }
+
   async function init() {
     const containers = document.querySelectorAll('[data-reviewbloom]');
     if (containers.length === 0) return;
 
-    const settings = await getStoreSettings();
-    const lang = settings.language || 'english';
+    containers.forEach(renderLoading);
 
-    for (const container of containers) {
+    const settingsPromise = getStoreSettings();
+
+    containers.forEach((container) => {
       const productId = container.dataset.productId;
-      if (!productId) continue;
-      const data = await getReviews(productId);
-      renderWidget(container, data, settings, lang);
-    }
+      if (!productId) return;
+
+      const reviewsPromise = getReviews(productId);
+
+      Promise.all([settingsPromise, reviewsPromise])
+        .then(([settings, data]) => {
+          const lang = settings.language || 'english';
+          renderWidget(container, data, settings, lang);
+        })
+        .catch(() => {
+          container.innerHTML = '<div style="min-height:220px;display:flex;align-items:center;justify-content:center;color:#ef4444;font-size:14px;">Unable to load reviews.</div>';
+        });
+    });
   }
 
   if (document.readyState === 'loading') {
@@ -306,6 +320,29 @@ router.get('/reviewbloom.js', async (req, res) => {
   } else {
     init();
   }
+
+  // Listen for new review submissions from review.html
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'reviewbloom_new_review') {
+      try {
+        const newReview = JSON.parse(e.newValue);
+        const containers = document.querySelectorAll('[data-reviewbloom]');
+        const shop = window.Shopify?.shop || window.location.hostname;
+        
+        containers.forEach((container) => {
+          const productId = container.dataset.productId;
+          if (productId == newReview.productId && shop === newReview.shop) {
+            Promise.all([getStoreSettings(), getReviews(productId)])
+              .then(([settings, data]) => {
+                const lang = settings.language || 'english';
+                renderWidget(container, data, settings, lang);
+              })
+              .catch(() => {});
+          }
+        });
+      } catch(e) {}
+    }
+  });
 })();
   `;
 

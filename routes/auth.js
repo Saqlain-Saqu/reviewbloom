@@ -99,7 +99,8 @@ async function installScriptTag(shop, token) {
       body: JSON.stringify({
         script_tag: {
           event: 'onload',
-          src: `${process.env.SHOPIFY_APP_URL}/widget/reviewbloom.js`
+          src: `${process.env.SHOPIFY_APP_URL}/widget/reviewbloom.js`,
+          display_scope: 'all'
         }
       })
     });
