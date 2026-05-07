@@ -64,6 +64,31 @@ router.post('/submit', async (req, res) => {
     // Get store settings for auto-approve
     const storeResult = await pool.query('SELECT * FROM stores WHERE shop = $1', [shop]);
     const store = storeResult.rows[0];
+    // Plan limits check
+    const storeResult = await pool.query('SELECT * FROM stores WHERE shop = $1', [shop]);
+    const store = storeResult.rows[0];
+    const plan = store?.plan || 'free';
+
+    const countResult = await pool.query(`
+      SELECT COUNT(*) as count FROM reviews 
+      WHERE shop = $1 
+      AND created_at > NOW() - INTERVAL '30 days'
+    `, [shop]);
+
+    const monthlyCount = parseInt(countResult.rows[0].count);
+    const limits = { free: 10, starter: 100, pro: 999999 };
+    const limit = limits[plan] || 10;
+
+    if (monthlyCount >= limit) {
+      return res.status(403).json({ 
+        error: 'limit_reached',
+        message: `Monthly limit reach ho gaya! Upgrade karein.`,
+        plan: plan,
+        limit: limit,
+        current: monthlyCount
+      });
+    }
+
     const status = 'approved';
 
     await pool.query(`

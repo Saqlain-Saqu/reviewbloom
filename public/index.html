@@ -672,6 +672,26 @@
       border: 1px solid rgba(239, 68, 68, 0.3);
       color: var(--danger);
   }
+  .toast.info {
+      background: rgba(124,58,237,0.15);
+      border: 1px solid rgba(124,58,237,0.3);
+      color: #7c3aed;
+  }
+
+  /* Pricing responsive */
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-bottom: 32px;
+  }
+  @media (max-width: 900px) {
+    .pricing-grid { grid-template-columns: 1fr !important; }
+  }
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(0.9) translateY(20px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
   </style>
   </head>
 <body>
@@ -701,11 +721,14 @@
   <a class="nav-item" onclick="showPage('install')">
     <span class="nav-icon">📦</span> Installation
   </a>
+  <a class="nav-item" onclick="showPage('pricing')">
+    <span class="nav-icon">💎</span> Pricing Plans
+  </a>
 
   <div class="sidebar-bottom">
-    <div class="plan-badge">🆓 Free Plan</div>
-    <p style="font-size:12px;color:var(--text-muted);margin:6px 0;">50 reviews/month</p>
-    <button class="upgrade-btn">⚡ Upgrade to Pro</button>
+    <div class="plan-badge" id="current-plan-badge">🆓 Free Plan</div>
+    <p style="font-size:12px;color:var(--text-muted);margin:6px 0;" id="plan-limit-text">10 reviews/month</p>
+    <button class="upgrade-btn" onclick="showPage('pricing')">⚡ Upgrade Plan</button>
   </div>
 </aside>
 
@@ -882,6 +905,136 @@
             <li>Save — Reviews will appear automatically! ✅</li>
           </ol>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pricing Page -->
+  <!-- Upgrade Modal -->
+  <div id="upgrade-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:9999;align-items:center;justify-content:center;backdrop-filter:blur(4px);">
+    <div style="background:var(--surface);border-radius:20px;padding:40px;max-width:440px;width:90%;margin:auto;position:relative;border:1px solid var(--border);box-shadow:0 20px 60px rgba(0,0,0,0.3);animation:modalIn 0.3s ease;">
+      <button onclick="closeModal()" style="position:absolute;top:16px;right:16px;background:var(--surface2);border:none;border-radius:50%;width:32px;height:32px;font-size:18px;cursor:pointer;color:var(--text-muted);">✕</button>
+      <div id="modal-icon" style="font-size:56px;text-align:center;margin-bottom:16px;"></div>
+      <h2 id="modal-title" style="text-align:center;font-size:24px;font-weight:800;margin-bottom:8px;"></h2>
+      <div id="modal-price" style="text-align:center;font-size:36px;font-weight:800;margin-bottom:20px;"></div>
+      <ul id="modal-features" style="list-style:none;margin-bottom:24px;line-height:2.2;font-size:14px;"></ul>
+      <div style="background:var(--surface2);border-radius:12px;padding:16px;margin-bottom:20px;text-align:center;">
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:8px;">Upgrade ke liye email karein:</p>
+        <a href="mailto:support@reviewbloom.app" style="color:var(--accent);font-weight:700;font-size:15px;">support@reviewbloom.app</a>
+      </div>
+      <button id="modal-btn" style="width:100%;padding:14px;border:none;border-radius:12px;font-size:15px;font-weight:700;color:white;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;"></button>
+    </div>
+  </div>
+
+  <div class="page" id="page-pricing">
+    <div class="page-header">
+      <h1 class="page-title">Choose Your <span>Plan</span></h1>
+    </div>
+
+    <div style="display:grid;gap:24px;margin-bottom:32px;" class="pricing-grid">
+
+      <!-- Free Plan -->
+      <div class="section" style="padding:32px;text-align:center;">
+        <div style="font-size:48px;margin-bottom:12px;">🆓</div>
+        <h2 style="font-size:22px;font-weight:800;margin-bottom:8px;">Free</h2>
+        <div style="font-size:42px;font-weight:800;color:var(--accent);margin:16px 0;">$0<span style="font-size:16px;color:var(--text-muted);">/month</span></div>
+        <ul style="list-style:none;text-align:left;margin:20px 0;line-height:2.4;font-size:14px;">
+          <li>✅ 10 reviews/month</li>
+          <li>✅ English, Urdu, Hindi</li>
+          <li>✅ Basic widget</li>
+          <li>✅ Admin dashboard</li>
+          <li>❌ Auto email requests</li>
+          <li>❌ Priority support</li>
+          <li>❌ Remove branding</li>
+        </ul>
+        <button style="width:100%;padding:14px;background:#e5e7eb;border:none;border-radius:10px;font-size:14px;font-weight:700;color:#6b7280;font-family:'Plus Jakarta Sans',sans-serif;">Current Plan</button>
+      </div>
+
+      <!-- Starter Plan -->
+      <div class="section" style="padding:32px;text-align:center;border-color:var(--accent);position:relative;">
+        <div style="position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:var(--accent);color:white;padding:5px 20px;border-radius:20px;font-size:12px;font-weight:700;white-space:nowrap;">⭐ MOST POPULAR</div>
+        <div style="font-size:48px;margin-bottom:12px;">🚀</div>
+        <h2 style="font-size:22px;font-weight:800;margin-bottom:8px;">Starter</h2>
+        <div style="font-size:42px;font-weight:800;color:var(--accent);margin:16px 0;">$4.99<span style="font-size:16px;color:var(--text-muted);">/month</span></div>
+        <ul style="list-style:none;text-align:left;margin:20px 0;line-height:2.4;font-size:14px;">
+          <li>✅ 100 reviews/month</li>
+          <li>✅ English, Urdu, Hindi</li>
+          <li>✅ Beautiful widget</li>
+          <li>✅ Admin dashboard</li>
+          <li>✅ Auto email requests</li>
+          <li>✅ Priority support</li>
+          <li>❌ Remove branding</li>
+        </ul>
+        <button onclick="upgradePlan('starter')" style="width:100%;padding:14px;background:var(--accent);border:none;border-radius:10px;font-size:14px;font-weight:700;color:white;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all 0.2s;">🚀 Upgrade — $4.99/mo</button>
+      </div>
+
+      <!-- Pro Plan -->
+      <div class="section" style="padding:32px;text-align:center;position:relative;">
+        <div style="font-size:48px;margin-bottom:12px;">👑</div>
+        <h2 style="font-size:22px;font-weight:800;margin-bottom:8px;">Pro</h2>
+        <div style="font-size:42px;font-weight:800;color:#7c3aed;margin:16px 0;">$9.99<span style="font-size:16px;color:var(--text-muted);">/month</span></div>
+        <ul style="list-style:none;text-align:left;margin:20px 0;line-height:2.4;font-size:14px;">
+          <li>✅ Unlimited reviews</li>
+          <li>✅ English, Urdu, Hindi</li>
+          <li>✅ Premium widget</li>
+          <li>✅ Admin dashboard</li>
+          <li>✅ Auto email requests</li>
+          <li>✅ Priority support</li>
+          <li>✅ Remove branding</li>
+        </ul>
+        <button onclick="upgradePlan('pro')" style="width:100%;padding:14px;background:linear-gradient(135deg,#7c3aed,#6d28d9);border:none;border-radius:10px;font-size:14px;font-weight:700;color:white;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all 0.2s;">👑 Upgrade — $9.99/mo</button>
+      </div>
+
+    </div>
+
+    <!-- Compare Table -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-title">📊 Plan Comparison</span>
+      </div>
+      <div style="padding:24px;overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;font-size:14px;">
+          <thead>
+            <tr style="border-bottom:2px solid var(--border);">
+              <th style="text-align:left;padding:12px;color:var(--text-muted);">Feature</th>
+              <th style="text-align:center;padding:12px;">🆓 Free</th>
+              <th style="text-align:center;padding:12px;color:var(--accent);">🚀 Starter</th>
+              <th style="text-align:center;padding:12px;color:#7c3aed;">👑 Pro</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid var(--border);">
+              <td style="padding:14px;">Monthly Reviews</td>
+              <td style="text-align:center;padding:14px;">10</td>
+              <td style="text-align:center;padding:14px;color:var(--accent);font-weight:600;">100</td>
+              <td style="text-align:center;padding:14px;color:#7c3aed;font-weight:600;">Unlimited</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border);">
+              <td style="padding:14px;">Languages (EN/UR/HI)</td>
+              <td style="text-align:center;">✅</td>
+              <td style="text-align:center;">✅</td>
+              <td style="text-align:center;">✅</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border);">
+              <td style="padding:14px;">Auto Email Requests</td>
+              <td style="text-align:center;">❌</td>
+              <td style="text-align:center;">✅</td>
+              <td style="text-align:center;">✅</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border);">
+              <td style="padding:14px;">Priority Support</td>
+              <td style="text-align:center;">❌</td>
+              <td style="text-align:center;">✅</td>
+              <td style="text-align:center;">✅</td>
+            </tr>
+            <tr>
+              <td style="padding:14px;">Remove Branding</td>
+              <td style="text-align:center;">❌</td>
+              <td style="text-align:center;">❌</td>
+              <td style="text-align:center;">✅</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
@@ -1083,6 +1236,44 @@
     showToast('Code copied! 📋', 'success');
   }
 
+  const planData = {
+    starter: {
+      icon: '🚀', name: 'Starter', price: '$4.99/month',
+      color: '#10b981',
+      features: ['✅ 100 reviews/month','✅ English, Urdu, Hindi','✅ Beautiful widget','✅ Auto email requests','✅ Priority support','❌ Remove branding']
+    },
+    pro: {
+      icon: '👑', name: 'Pro', price: '$9.99/month',
+      color: '#7c3aed',
+      features: ['✅ Unlimited reviews','✅ English, Urdu, Hindi','✅ Premium widget','✅ Auto email requests','✅ Priority support','✅ Remove branding']
+    }
+  };
+
+  function upgradePlan(plan) {
+    const d = planData[plan];
+    document.getElementById('modal-icon').textContent = d.icon;
+    document.getElementById('modal-title').textContent = d.name + ' Plan';
+    document.getElementById('modal-price').textContent = d.price;
+    document.getElementById('modal-price').style.color = d.color;
+    document.getElementById('modal-features').innerHTML = d.features.map(f => '<li>' + f + '</li>').join('');
+    document.getElementById('modal-btn').textContent = d.icon + ' Get ' + d.name + ' — ' + d.price;
+    document.getElementById('modal-btn').style.background = plan === 'pro' ? 'linear-gradient(135deg,#7c3aed,#6d28d9)' : '#10b981';
+    document.getElementById('modal-btn').onclick = () => { window.location.href = 'mailto:support@reviewbloom.app?subject=Upgrade to ' + d.name + ' Plan'; };
+    const modal = document.getElementById('upgrade-modal');
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    document.getElementById('upgrade-modal').style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
+  // Close modal on outside click
+  document.getElementById('upgrade-modal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+
   function showToast(msg, type = 'success') {
     const toast = document.getElementById('toast');
     toast.textContent = msg;
@@ -1094,4 +1285,4 @@
   loadDashboard();
 </script>
 </body>
-</html>
+</html> 
