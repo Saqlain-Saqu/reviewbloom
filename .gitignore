@@ -1,5 +1,6 @@
 # Environment variables (NEVER commit actual secrets)
 .env
+.env.example
 .env.local
 .env.*.local
 
